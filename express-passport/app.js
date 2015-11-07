@@ -60,9 +60,16 @@ app.use(passport.session());
 
 app.get('/auth/twitter', passport.authenticate('twitter'));
 app.get('/auth/twitter/callback', passport.authenticate('twitter', { 
-  successRedirect: '/',
-  failureRedirect: '/login' 
-}));
+  failureRedirect: 'http://localhost:4200' 
+}), function (req, res) {
+  var user = {
+    id: req.user.profile.id,
+    username: req.user.profile.username,
+    displayName: req.user.profile.displayName,
+    profileImage: req.user.profile._json.profile_image_url_https
+  };
+  res.redirect('http://localhost:4200?code=' + encodeURIComponent(JSON.stringify(user)));
+});
 
 app.use('/', routes);
 app.use('/users', users);
