@@ -6,6 +6,13 @@ module.exports = function(environment) {
     environment: environment,
     baseURL: '/',
     locationType: 'auto',
+    torii: {
+      providers: {
+        'twitter': {
+          requestTokenUri: 'http://localhost:3000/auth/twitter'
+        }
+      }
+    },
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
