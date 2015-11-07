@@ -1,7 +1,12 @@
 <h2 id="title">Welcome to Ember</h2>
 
 <div>
+  {{#if session.isAuthenticated}}
+    <p>@{{session.currentUser.username}}</p>
+    <p><img src={{session.currentUser.profileImage}}></p>
+  {{else}}
     <button {{action 'login'}}>Sign in with Twitter</button>
+  {{/if}}
 </div>
 
 {{outlet}}

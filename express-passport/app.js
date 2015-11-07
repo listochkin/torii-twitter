@@ -71,6 +71,20 @@ app.get('/auth/twitter/callback', passport.authenticate('twitter', {
   res.redirect('http://localhost:4200?code=' + encodeURIComponent(JSON.stringify(user)));
 });
 
+app.get('/me', function (req, res) {
+  if (req.user) {
+    var user = {
+      id: req.user.profile.id,
+      username: req.user.profile.username,
+      displayName: req.user.profile.displayName,
+      profileImage: req.user.profile._json.profile_image_url_https
+    };
+    res.jsonp(user);    
+  } else {
+    res.send(401);
+  }
+});
+
 app.use('/', routes);
 app.use('/users', users);
 
