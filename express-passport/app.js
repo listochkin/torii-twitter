@@ -1,12 +1,41 @@
+require('dotenv-safe').load();
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+
+var passport = require('passport');
+var TwitterStrategy = require('passport-twitter').Strategy;
+
+var USERS = {};
+
+passport.use(new TwitterStrategy({
+  consumerKey: process.env.TWITTER_CONSUMER_KEY,
+  consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
+  callbackURL: '/auth/twitter/callback'
+}, function(token, tokenSecret, profile, done) {
+  USERS[profile.id] = {
+    token: token,
+    tokenSecret: tokenSecret,
+    profile: profile
+  };
+  done(null, USERS[profile.id]);
+}));
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
 
 var app = express();
 
@@ -21,6 +50,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+  secret: process.env.SESSION_SECRET
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/auth/twitter', passport.authenticate('twitter'));
+app.get('/auth/twitter/callback', passport.authenticate('twitter', { 
+  successRedirect: '/',
+  failureRedirect: '/login' 
+}));
 
 app.use('/', routes);
 app.use('/users', users);
