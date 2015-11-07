@@ -7,6 +7,7 @@ module.exports = function(environment) {
     baseURL: '/',
     locationType: 'auto',
     torii: {
+      sessionServiceName: 'session',
       providers: {
         'twitter': {
           requestTokenUri: 'http://localhost:3000/auth/twitter'
